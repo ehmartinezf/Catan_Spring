@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class CatanSpringApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(CatanSpringApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(CatanSpringApplication.class, args);
+    }
 }
