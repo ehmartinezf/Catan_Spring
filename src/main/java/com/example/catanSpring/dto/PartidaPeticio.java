@@ -8,8 +8,6 @@ public record PartidaPeticio(
 		
 		@NotEmpty(message="No hi ha noms de jugadors")
 		List<String> noms,
-
-		int puntsPerGuanyar,
+		int puntsPerGuanyar
 		) {
-
 }
