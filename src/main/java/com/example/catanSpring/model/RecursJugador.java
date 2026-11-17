@@ -1,0 +1,96 @@
+package com.example.catanSpring.model;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+
+@NamedQuery(
+        name = "RecursJugador.perJugador",
+        query = "SELECT r FROM RecursJugador r WHERE r.jugador = :jugador")
+@NamedQuery(
+        name = "RecursJugador.perJugadorITipus",
+        query
+        = "SELECT r FROM RecursJugador r WHERE r.jugador = :jugador AND r.tipusRecurs ="
+        + " :tipus")
+@Entity
+@Table(
+        name = "recurs_jugador",
+        uniqueConstraints = {
+            @UniqueConstraint(
+                    name = "uk_id_jugador_id",
+                    columnNames = {"tipusRecurs", "jugador_id"})
+        })
+public class RecursJugador {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "jugador_id", nullable = false)
+    private Jugador jugador;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipusRecurs", nullable = false)
+    private TipusRecurs tipusRecurs;
+
+    @Column(name = "quantitat")
+    private int quantitat;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Jugador getJugador() {
+        return jugador;
+    }
+
+    public void setJugador(Jugador jugador) {
+        this.jugador = jugador;
+    }
+
+    public TipusRecurs getTipusRecurs() {
+        return tipusRecurs;
+    }
+
+    public void setTipusRecurs(TipusRecurs tipusRecurs) {
+        this.tipusRecurs = tipusRecurs;
+    }
+
+    public int getQuantitat() {
+        return quantitat;
+    }
+
+    public void setQuantitat(int quantitat) {
+        this.quantitat = quantitat;
+    }
+
+    @Override
+    public int hashCode() {
+        return RecursJugador.class.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof RecursJugador other)) {
+            return false;
+        }
+        return getId() != null && getId().equals(other.getId());
+    }
+}
