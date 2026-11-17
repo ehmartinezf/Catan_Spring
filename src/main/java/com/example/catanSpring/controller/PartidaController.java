@@ -21,9 +21,5 @@ public class PartidaController {
 	private PartidaService service;
 	
 	
-	@PostMapping
-	public ResponseEntity<PartidaResposta> iniciarPartida(@Valid @RequestBody PartidaPeticio partida){
-		return service.iniciarPartida(partida);
-	}
-	
+
 }
