@@ -6,5 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JugadorRepository extends JpaRepository<Jugador, Integer> {
 
+    boolean existsByNom(String nom);
+
     List<Jugador> findByPartidaIdOrderByOrdreTorn(int idPartida);
 }
