@@ -1,4 +1,4 @@
-package com.example.catanSpring.services;
+package com.example.catanSpring.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
