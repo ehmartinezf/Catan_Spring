@@ -1,4 +1,4 @@
-package com.example.catanSpring.controllers;
+package com.example.catanSpring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.catanSpring.dto.PartidaPeticio;
 import com.example.catanSpring.dto.PartidaResposta;
-import com.example.catanSpring.services.PartidaService;
+import com.example.catanSpring.service.PartidaService;
 
 import jakarta.validation.Valid;
 
