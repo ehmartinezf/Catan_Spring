@@ -1,4 +1,4 @@
-package com.example.catanSpring.services;
+package com.example.catanSpring.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -1,0 +1,25 @@
+package com.example.catanSpring.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.catanSpring.dto.PartidaPeticio;
+import com.example.catanSpring.dto.PartidaResposta;
+import com.example.catanSpring.service.PartidaService;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/partida")
+public class PartidaController {
+
+	@Autowired
+	private PartidaService service;
+	
+	
+
+}
