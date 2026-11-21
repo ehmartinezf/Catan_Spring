@@ -5,21 +5,30 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.catanSpring.dto.PartidaPeticio;
 import com.example.catanSpring.dto.PartidaResposta;
+import com.example.catanSpring.dto.RecursosJugadorResposta;
+import com.example.catanSpring.dto.TiradaResposta;
 import com.example.catanSpring.model.Aresta;
+import com.example.catanSpring.model.Assentament;
 import com.example.catanSpring.model.CartaDesenvolupament;
+import com.example.catanSpring.model.Ciutat;
 import com.example.catanSpring.model.ColorJugador;
+import com.example.catanSpring.model.EstatPartida;
 import com.example.catanSpring.model.Hexagon;
 import com.example.catanSpring.model.HexagonVertex;
 import com.example.catanSpring.model.Jugador;
 import com.example.catanSpring.model.Partida;
+import com.example.catanSpring.model.RecursJugador;
 import com.example.catanSpring.model.TipusCarta;
 import com.example.catanSpring.model.TipusTerreny;
 import com.example.catanSpring.model.Vertex;
@@ -54,6 +63,70 @@ public class PartidaService {
 	
 	@Autowired
 	private CartaRepository cartaRepository;
+	
+	@Transactional
+	public ResponseEntity<?> tirarDaus(int idPartida) {
+		Optional<Partida> op = repository.findById(idPartida);
+		if (!op.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NO EXISTE CAP PARTIDA AMB ID " + idPartida);
+		}
+		Partida partida = op.get();
+		if (partida.getEstat() != EstatPartida.EN_CURS) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("ERROR: LA PARTIDA NO ESTA EN CURS");
+		}
+		if (partida.isDausTirats()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("ERROR: ELS DAUS JA S'HAN TIRAT EN AQUEST TORN");
+		}
+
+		Random random = new Random();
+		int dau1 = random.nextInt(6) + 1;
+		int dau2 = random.nextInt(6) + 1;
+		int total = dau1 + dau2;
+
+		partida.setUltimaTirada(total);
+		partida.setDausTirats(true);
+
+		if (total == 7) {
+			partida.setLladrePendent(true);
+		}
+
+		Hexagon lladre = partida.getHexagonLladre();
+		ArrayList<RecursosJugadorResposta> produccio = new ArrayList<>();
+
+		for (Jugador j : partida.getJugadors()) {
+			int[] rebuts = new int[5];
+
+			if (total != 7) {
+				for (Hexagon hex : partida.getHexagons()) {
+					if (hex.getTerreny().getRecurs() == null) continue;
+					if (hex.getNumero() == null || hex.getNumero().intValue() != total) continue;
+					if (lladre != null && lladre.getId().equals(hex.getId())) continue;
+
+					for (HexagonVertex hv : hex.getHexagonVertexes()) {
+						Assentament a = hv.getVertex().getAssentament();
+						if (a == null) continue;
+						if (!a.getPropietari().getId().equals(j.getId())) continue;
+
+						int quantitat = 1; 
+						if (a instanceof Ciutat) {
+							quantitat = 2; 
+						}
+						int posicio = hex.getTerreny().getRecurs().ordinal();
+						rebuts[posicio] = rebuts[posicio] + quantitat;
+					}
+				}
+
+				for (RecursJugador rj : j.getRecursos()) {
+					int posicio = rj.getTipusRecurs().ordinal();
+					rj.setQuantitat(rj.getQuantitat() + rebuts[posicio]);
+				}
+			}
+
+			produccio.add(new RecursosJugadorResposta(j.getId(), j.getNom(),rebuts[0], rebuts[1], rebuts[2], rebuts[3], rebuts[4]));
+		}
+
+		return ResponseEntity.ok().body(new TiradaResposta(dau1, dau2, total, partida.isLladrePendent(), produccio));
+	}
 	
 	@Transactional
 	public ResponseEntity<PartidaResposta> iniciarPartida(PartidaPeticio pp){
