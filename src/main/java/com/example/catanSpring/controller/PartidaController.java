@@ -1,4 +1,4 @@
-package com.example.catanSpring.controllers;
+package com.example.catanSpring.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
